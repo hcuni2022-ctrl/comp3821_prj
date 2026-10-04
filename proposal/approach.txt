@@ -1,3 +1,15 @@
+Requirements:
+4. Proposed approaches and evaluations.
+Explain how you will pursue the objective and why the approach is reasonable. Identify the
+main methods and arguments, comparisons, experiments, or design activities you expect to use.
+Describe how you will assess correctness and the quality of the intended outcomes, using the
+guidance of your format in the next section.
+Identify any significant uncertainties or dependencies, such as unfamiliar background, an unproven
+claim, access to suitable inputs or implementation time. Explain a realistic response: maybe a
+restricted setting, an alternative method, a smaller resource or a revised question. You do not need
+to resolve these difficulties before submitting.
+
+Paragraph: 
 There are 2 directions that can be used to approach the problem.
 
 We can start by consulting relevant literature about online shortest path problem, Canadian traveller problem, multi-objective optimization, etc to get a brief understanding of the problem and identify the existing techniques. These reference provide us metrics, insights, and strategies that help us approach the problem. We can adapt the existing techniques into our simplified setting, or develop our own strategies and integrate with pre-existing techniques.
@@ -7,3 +19,6 @@ Alternatively, we can investigate counterexamples which traditional shortest pat
 We will verify correctness by ensuring that our algorithms always produce valid paths. To evaluate quality, we will check whether the algorithm optimises the objective we define, and compare its behaviour against standard routing strategies. The specific evaluation criteria will be chosen during the project.  If needed, we will analyse algorithm behaviours under specific cases and simulate in small scale to test empirical performance.
 
 Uncertainties includes selecting appropriate metrics. Fallback plan include further restrict the setting and the graph class.
+
+TO-DO:
+More uncertainties

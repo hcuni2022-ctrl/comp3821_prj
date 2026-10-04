@@ -1,0 +1,22 @@
+Requirements:
+Topic and objective.
+State the central question or purpose precisely. Introduce the problem, relevant assumptions and intended audience. 
+Explain why the topic interests your group and what makes it a worthwhile project.
+Make the focus clear enough to guide the work. For example, 
+a scholarly project on maximum flow could compare the invariants and correctness arguments of augmenting-path and push-relabel methods. 
+The topic maximum flow algorithms would need this additional focus.
+
+Note: 
+General its fine
+
+Key assumptions of k-deterministic CTP:
+-Fully visible
+-undirected and positive weight
+-guaranteed connectivity
+-AT MOST k blockage
+-blockage is permanent
+-only see blockage at endpoint
+Our assumptions to keep it simple
+-EXACTLY 1 blockage
+-some variant assume malicious adversary to to set the worst blockage, but we prolly skip that to skip game theory (actually if u want we can put that version into extension?)
+-offline path finding, path is planned before any move

@@ -1,11 +1,26 @@
+Requirements:
+State the project format(s) and what you intend to produce. 
+Explain the substantial algorithmic work involved and what the completed project should demonstrate.
+Every format includes the final report and poster; 
+identify any additional resource, implementation, or creative work you expect to develop.
+Distinguish between a manageable core set of ideas from possible extensions. 
+The core should provide a worthwhile project even if a more ambitious direction proves unsuccessful. 
+Set clear boundaries on the problems, results, or features you will address.
+
+
+
 Note:
 - Theorectical
 - Aim to produce (Core): 
-	- Design and decide Metric to mathematically define robustness/fragility of a path   /   relative robustness/fragility (how robust/fragile a path is comparing to oter)
-	- Algorithms that minimise total length of the path and stay robust (favouring routes that have short, easily accessible alternative branches if a failure occurs)	
+	- Design and decide Metric to mathematically define robustness/fragility of a path   /   
+		relative robustness/fragility (how robust/fragile a path is comparing to oter)
+	- Algorithms that minimise total length of the path and stay robust 
+		(favouring routes that have short, easily accessible alternative branches if a failure occurs)	
 	- Proof
 - By-product:
-	- Study on existing metrics and algorithm, study on possibility to adapt them into our specific setting(r they plug-and-play, how to adapt it)
+	- Study on existing metrics and algorithm, 
+		study on possibility to adapt them into our specific setting
+		(r they plug-and-play, how to adapt it)
 - Extension:
 	- comparison
 	- step-by-step analyse of specific case to check behaviour
@@ -15,6 +30,8 @@ Note:
 	- Stochastic: multi edge can fail at same time involves probability and baysain decesion rule
 	- Online decision: a brute force way is Dijkstra, if hit blocked edge, run another Dijkstera, not intersting
 	- Adversary: involves game theory 
+
+
 
 
 Paragraph:
@@ -40,7 +57,8 @@ A few possible extensions include:
 
 Here are a few boundaries we set for ourselves so that the work is manageable:
 -Stochastic CTP will not be investigated, since it require deep understanding of probability and Bayesian decision
--Online decision will not be investigated, it will oversimplified the deterministic k-CTP into brute-force Dijkstra
+-Online decision-making will not be investigated:
+	as the project focuses on offline selection of an initial path and its fallback options rather than strategies for responding to discovered blockages.
 -Adversary will not be introduce, it requires knowledge of game theory
 
 Comment:
