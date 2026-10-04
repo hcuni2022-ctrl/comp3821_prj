@@ -1,0 +1,21 @@
+Initial background and understanding.
+Identify relevant sources, algorithms, or existing work, and explain how they inform your direction.
+A short and purposeful selection of sources is sufficient; there is no required number of references.
+Include a brief, concrete explanation that demonstrates initial engagement: an idea, worked example, comparison between methods, or a mathematical difficulty your resource will explain.
+Give enough detail to show what you understand. State what you will still need to learn and distinguish established results from questions you intend to investigate
+
+-CTP introduced by Christos Papadimitriou and Mihalis Yannakakis in 1989 ina conference, published in 1991 "Shortest paths without a map", but its strategy problem 
+https://books.google.com/books?hl=en&lr=&id=fuB8dMhKBzsC&oi=fnd&pg=PA261&dq=canadian+traveller+problem&ots=PleVyJBuD9&sig=UYj3V2haEXpnx01957n4TlJj5qc consider several variants of the CTP
+
+https://www.sciencedirect.com/science/article/pii/S0304397514001327#fg0060 demonstrate a strategy for the full deterministic k-CTP(merge with travel salesman), need sqrt(k) round
+
+idea to demonstrat
+We prefer a path like 
+	*--65--* over  (total 60)
+We prefer a route like 
+	*--65--* over *--59--*-1-* (total 60) (a failure will need 59 to go back)
+We prefer
+	*-1-*-59-* over *--59--*-1-* (failure cost is low)
+We prefer
+	*-1-*-1-*-1-*-1-*-1-*-1-*-1-* over *-1-*-1-*-1-*-1-*-1-*-1-*-1-* (there are multi exit in the first path)
+	     \   \   \   \   \   \  

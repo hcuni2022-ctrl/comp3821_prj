@@ -1,0 +1,47 @@
+Note:
+- Theorectical
+- Aim to produce (Core): 
+	- Design and decide Metric to mathematically define robustness/fragility of a path   /   relative robustness/fragility (how robust/fragile a path is comparing to oter)
+	- Algorithms that minimise total length of the path and stay robust (favouring routes that have short, easily accessible alternative branches if a failure occurs)	
+	- Proof
+- By-product:
+	- Study on existing metrics and algorithm, study on possibility to adapt them into our specific setting(r they plug-and-play, how to adapt it)
+- Extension:
+	- comparison
+	- step-by-step analyse of specific case to check behaviour
+	- empirical result to proof the proof (experiment, by product: an graph experiment environment)
+	- can we extend to multi k(prolly no, but we can inspect our algo and informally state why/ at which point it fail in multi-k)
+- Boundaries(will not touch):
+	- Stochastic: multi edge can fail at same time involves probability and baysain decesion rule
+	- Online decision: a brute force way is Dijkstra, if hit blocked edge, run another Dijkstera, not intersting
+	- Adversary: involves game theory 
+
+
+Paragraph:
+
+The format of the project will be mostly theoretical, and possibly with a bit scholar and experiment to help us better understand the problem and evaluate the results.
+
+We intend to produce a few deliverables:
+-Metrics to mathematically define a robustness/fragility of a path in our specific setting, or a relative robustness/fragility rating to guide path selection in our algorithm.
+-Algorithm(s) to choose a path that minimise the total length and also stay robust if a failure occurs.
+-Theoretical proof that algorithm behave as expected
+-Documentation of all our progress
+-A report to summary our major findings
+-A poster
+
+One preparatory by-product will be produce:
+-Review of existing techniques as foundation. We will investigate the possibility to adapt them into our specific setting
+
+A few possible extensions include:
+-A comparison if we have multiple algorithm
+-step-by-step analyse of specific case to check behaviour
+-Empirical result and an graph experiment environment as by-product
+-Study on extending our developed idea into mulit-k CTP setting
+
+Here are a few boundaries we set for ourselves so that the work is manageable:
+-Stochastic CTP will not be investigated, since it require deep understanding of probability and Bayesian decision
+-Online decision will not be investigated, it will oversimplified the deterministic k-CTP into brute-force Dijkstra
+-Adversary will not be introduce, it requires knowledge of game theory
+
+Comment:
+ok so i tried to write paragraph, but forgive me point form is just clearer
