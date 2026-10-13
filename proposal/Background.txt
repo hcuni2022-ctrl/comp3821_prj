@@ -11,12 +11,13 @@ State what you will still need to learn and distinguish established results from
 
 
 Note:
--CTP introduced by Christos Papadimitriou and Mihalis Yannakakis in 1989 ina conference, published in 1991 "Shortest paths without a map", but its strategy problem 
+-CTP introduced by Christos Papadimitriou and Mihalis Yannakakis in 1989 in a conference, published in 1991 "Shortest paths without a map", but its strategy problem 
 https://books.google.com/books?hl=en&lr=&id=fuB8dMhKBzsC&oi=fnd&pg=PA261&dq=canadian+traveller+problem&ots=PleVyJBuD9&sig=UYj3V2haEXpnx01957n4TlJj5qc consider several variants of the CTP
 
 https://www.sciencedirect.com/science/article/pii/S0304397514001327#fg0060 demonstrate a strategy for the full deterministic k-CTP(merge with travel salesman), need sqrt(k) round
+there are some more but not gonna list them
 
-idea to demonstrat
+idea to demonstrat initial engagement
 We prefer a path like 
 	*--65--* over  (total 60)
 We prefer a route like 
@@ -27,4 +28,7 @@ We prefer
 	*-1-*-1-*-1-*-1-*-1-*-1-*-1-* over *-1-*-1-*-1-*-1-*-1-*-1-*-1-* (there are multi exit in the first path)
 	     \   \   \   \   \   \  
 
+Sometimes Shortest path is risky/fragile
 We want to mathematically represent these.
+
+existing source are for different varient(not plug and play), we will need to grasp the idea and work on our own.

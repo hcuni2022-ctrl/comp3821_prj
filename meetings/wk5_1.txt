@@ -1,0 +1,25 @@
+
+1. Clarify "the path is planned before movement begins."
+Planning an initial path beforehand is fine. But what happens if it is blocked? Your fragility measure depends on the recovery rule: returning to the source, switching at an earlier junction, or choosing a new route from the current node could produce different costs.
+
+You don't need the final algorithm yet, but state whether you will fix a recovery rule and optimise initial path selection, or design both path selection and recovery. Otherwise, "recoverycost" is not sufficiently defined.
+
+
+sol: say sth like provided a black-box algorithm that take a (link list) chosen path, return a full plan (link list of link lists) at the very begining? but this will make the scope too small? minimise expected cost
+
+2. theory work allocation
+
+aim for 3 existing method that work on other variant, take their idea and analysis how they perform on this 1k setting
+
+3. own sht 
+
+start writing a doc for counterexamples (about 10 ig, show what characteristcs are prefered ), and mathematical representation 
+
+4. experimental env
+
+graph.h prolly steal from 2521
+basic graph algo in a seperate .h
+each algo in a .h
+set-up (random create graphs) in a .h
+main (run exp) in a .h
+dot bash script to visualise
