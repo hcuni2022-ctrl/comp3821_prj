@@ -40,7 +40,7 @@ Examples:
 - Ideally ~3 existing approaches analysed.
 ### Slots:
 
-- [ ]
+- [ Arseniy Pyanov ]
 - [ ]
 - [ ]
 
