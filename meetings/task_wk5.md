@@ -66,7 +66,7 @@ Examples:
 - Ideally 2 formulations / approaches.
 ### Slots:
 
-- [ ]
+- [Hubert]
 - [ ]
 
 
@@ -98,7 +98,7 @@ Visualisation
 - DOT generation
 - Graphviz scripts
 - graph debugging visualisations
-#### Slot 5 [ ]
+#### Slot 5 [Hubert]
 Experiment & Analysis Pipeline
 
 - Kaggle notebook setup
