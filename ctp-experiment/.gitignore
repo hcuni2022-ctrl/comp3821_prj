@@ -1,0 +1,7 @@
+# Ignore local build products and generated experiment artifacts.
+/build/
+/data/generated/*.ctp
+/data/results/*.csv
+/data/results/analysis/
+/visualisations/dot/*.dot
+/visualisations/images/*.png

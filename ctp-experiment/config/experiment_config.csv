@@ -1,0 +1,3 @@
+# Initial configuration layout; add graph families and repetition settings later.
+vertex_count,edge_probability,min_weight,max_weight,edge_seed,blockage_seed,repetitions
+20,0.20,1,10,3821,3821,1
