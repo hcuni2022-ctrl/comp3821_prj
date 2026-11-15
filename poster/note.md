@@ -19,3 +19,7 @@ $C(P,e)=d_P (s,u)+d_(G-e) (u,t)$
     - meet blockage at the end of the path, backtrack to the starting point s. (giving 2*k)
     - after k th blockage, the remaining shortest path is the offline optimum (giving 1)
 - However, full backtrack can be expensive
+
+## Initial direction and Proposed algorithm
+- Graph structure is important, if traveller planned path is s-u-t, when meet the blockage if there is an alternative path of u-t, it must form a cycle with the initial path.
+- Greedy-style algorithm is limited, since alternative is discarded immediately, but we need to know recoveries to tell is a path better than other.
