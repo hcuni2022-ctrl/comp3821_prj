@@ -1,4 +1,4 @@
-# 1. Initial Directions — 300–400 words
+# 1. Initial Directions
 ## 1.1 Graph-Structural Approaches
 - Introduce the initial idea of analysing graph structure rather than relying solely on a shortest-path algorithm.
 - Discuss cycles, alternative paths, bridges, dominators and bottlenecks.
@@ -11,26 +11,44 @@
 - Introduce the idea of using simple paths to identify recovery alternatives.
 - Explain the motivation for developing a multi-stage pipeline.
 ```latex
-At the begining of the project,  we have identified a few structral properties of path that might be relevent.\\
-Cycles in graphs  provides alternative routes around blocked edges.\\
-Edge-weight distribution determines how much travel may be wasted before a blockage.\\
-We notice that simple counting may not capture the actual recovery cost,
-since recovery cost not only depend on number of occureance, 
-it also depend on distribution of occurance along the path.\\
-Also, fragility is relative.
-Fragility is better understood through the consequences of a blockage, rather than simply counting structural features.
+\section{Approach}
+\subsection{Initial Directions}
 
-However, traditional  path selection only try to find one best path.\\
-They do not consider alternative by default.\\
-We need a mean to let the algorithm be aware of alternatives.\\
-This motivated the shift from measuring fragility directly towards calculating recovery costs.
+\subsubsection{Graph-Structural Approaches}
+
+During the initial stages of the project, we explored whether graph structure could provide a better indication of route fragility than shortest-path selection alone. We considered properties such as cycles, alternative paths, bridges, dominators and bottlenecks to understand how the surrounding graph could affect the consequences of an edge blockage. This led us to recognise that the availability of alternative connections was an important factor in determining route robustness.
+
+\subsubsection{From Structural Metrics to Recovery Costs}
+We initially considered structural metrics such as segmentation and early-exit characteristics to describe potential route fragility. However, these metrics mainly described the selected path and could not reliably capture the actual quality or cost of alternative routes. We therefore shifted towards explicitly considering recovery costs, focusing on how much additional travel would be required when an edge became unavailable.
+
+\subsubsection{Proposed Algorithmic Direction}
+
+To investigate recovery costs, we needed a way to identify alternative paths for a selected route. We first considered enumerating simple paths, which provided a direct way to represent possible alternatives but could become computationally expensive. This motivated the development of a path-enumeration tree, which organises partial simple paths into a shared tree structure while preserving their individual path histories. This became the starting point for our subsequent algorithmic investigation.
 ```
 
 # 2. Preprocessing and Overall Pipeline
 Focus on the design and data flow, rather than the detailed mathematical formulation.
 ```latex
-Our proposed algorithm consist of 3 stage.
-Initial Path Enumeration $\to$ Path Index $\to$ Path Selection
+\subsection{Preprocessing and Overall Pipeline}
+
+Our proposed approach uses a preprocessing pipeline to incorporate potential recovery costs into the initial route-selection process. Rather than directly applying a shortest-path algorithm to the original graph, we first construct a representation of possible simple paths and organise the resulting information for efficient access.
+
+The pipeline consists of three main stages:
+\begin{enumerate}
+    \item \textbf{Path representation}
+    Construct a path-enumeration tree to represent possible simple paths while preserving their individual path histories.
+    \item \textbf{Recovery-cost computation}
+    Use the constructed representation and PathIndex to evaluate potential recovery costs through a modified reverse-Dijkstra procedure.
+    \item \textbf{Route selection}
+    Use the computed values to guide the selection of an initial route, taking potential edge blockages and their recovery costs into consideration.
+
+\end{enumerate}
+
+% 1. **Path representation:** Construct a path-enumeration tree to represent possible simple paths while preserving their individual path histories.
+% 2. **Recovery-cost computation:** Use the constructed representation and PathIndex to evaluate potential recovery costs through a modified reverse-Dijkstra procedure.
+% 3. **Route selection:** Use the computed values to guide the selection of an initial route, taking potential edge blockages and their recovery costs into consideration.
+
+The following sections explain each component in detail.
 ```
 ## 2.1 Initial Path Enumeration
 - Explain why we need to consider multiple simple paths rather than only one shortest path.
@@ -52,11 +70,53 @@ Initial Path Enumeration $\to$ Path Index $\to$ Path Selection
 % Enumerating simple paths help us compute recovery cost.
 % Allows path-specific information to be stored.
 % Makes it possible to compare paths that reach the same original vertex through different histories.
+\subsubsection{Path Enumeration}
 Considering only a single shortest path is insufficient for our problem, as an edge blockage may require finding an alternative route to the destination. We therefore enumerate multiple simple paths (paths that do not revisit vertices) to represent the available alternatives without redundant cycles.
 
 We introduce a Path Enumeration Tree to explicitly represent these paths. Different occurrences of the same original vertex are stored as separate tree nodes, preserving their respective path histories. This also allows us to prevent cycles during enumeration.
 
 The resulting tree is used to construct the Path Index, which groups candidate paths by their first next vertex for subsequent recovery-path selection.
+\begin{lstlisting}[caption=Simple Path Tree Construction]
+PROCEDURE BuildPathEnumerationTree(G, t):
+
+    root = new TreeNode
+    root.vertex = t
+    root.cost = 0
+    root.history = [t]
+    root.parent = NULL
+
+    vertexToTreeNodes[t].append(root)
+
+    EXPAND(root)
+
+    RETURN root, vertexToTreeNodes
+
+
+PROCEDURE EXPAND(node):
+
+    u = node.vertex
+
+    FOR EACH neighbour v OF u:
+
+        // Prevent cycles: only enumerate simple paths
+        IF v IN node.history:
+            CONTINUE
+
+        child = new TreeNode
+
+        child.vertex = v
+        child.cost = node.cost + w(u, v)
+        child.history = node.history + [v]
+        child.parent = node
+
+        node.children.append(child)
+
+        vertexToTreeNodes[v].append(child)
+
+        // Recursively expand the new path
+        EXPAND(child)
+
+\end{lstlisting}
 
 ```
 ```
@@ -108,8 +168,33 @@ PROCEDURE EXPAND(node):
 - Explain how recovery-cost information is extracted from these groups.
 
 ```latex
+\subsubsection{Path Index}
 Although the Path Enumeration Tree represents all candidate simple paths, searching through the entire collection for recovery alternatives can be inefficient. We therefore construct a $Path Index$ to organise these paths by their first next vertex. Specifically, $pathIndex[u][v]$ stores all candidate paths from vertex $u$ to destination $t$ that begin with edge $(u,v)$. This grouping allows us to efficiently exclude paths containing a blocked first edge and retrieve alternative candidates during recovery-path selection.
 
+\begin{lstlisting}[caption=Path Index construction]
+PROCEDURE BuildPathIndex(vertexToTreeNodes, t):
+
+    INITIALISE empty pathIndex
+
+    FOR EACH vertex u IN vertexToTreeNodes:
+
+        FOR EACH node IN vertexToTreeNodes[u]:
+
+            // The node stores the path from t to u
+            // Reverse it to obtain a candidate path from u to t
+            path = REVERSE(node.history)
+
+            // Destination has no further edge to traverse
+            IF u == t:
+                CONTINUE
+
+            // First vertex after u determines the group
+            v = path[1]
+
+            pathIndex[u][v].append(path)
+
+    RETURN pathIndex
+\end{lstlisting}
 ```
 
 ```
@@ -161,7 +246,8 @@ Use recovery information to select an initial route
 
 You can introduce the route-selection stage here, but leave its mathematical formulation for Section 4.
 
-```
+```latex
+\subsubsection{Conclusion of preprocessing}
 <!-- show graph -->
 Before the path-selection stage, we perform preprocessing to construct a representation of the candidate simple paths between each vertex and the destination. This consists of two stages: constructing the Path Enumeration Tree to explicitly represent distinct path histories, followed by building the Path Index to organise candidate paths by their first next vertex. The resulting index provides an efficient lookup structure for retrieving alternative paths and filtering out candidates affected by blockages during subsequent recovery-path selection.
 ```
@@ -172,9 +258,75 @@ Discuss whether the preprocessing is necessary and how it could be improved.
 - Could recovery costs be computed directly using edge-deleted shortest paths or replacement-path techniques?
 - What are the efficiency trade-offs?
 This section evaluates the preprocessing independently of whether the final selection formulation is correct.
-```
-\section{Questioning the Current Approach} \subsection{1. Questioning the Path Enumeration Tree} Can we construct the Path Index without explicitly enumerating every simple path? The Path Enumeration Tree provides a way to represent different path histories, but its construction can be expensive due to the potentially exponential number of simple paths. We also observed repeated substructures in the tree. However, these do not necessarily correspond to equivalent subproblems that can be merged. Different path histories may have different visited vertices and accumulated costs, meaning that merging them could lose information required to maintain simple paths. As a result, we were unable to formulate a useful dynamic programming approach using a sufficiently compact state representation. \textbf{Future Direction:} Investigate whether the Path Index can be constructed directly, without first generating the full Path Enumeration Tree. \subsection{2. Questioning the Path Index} Do we actually need to store every candidate path? Assuming reversed Dijkstra is an appropriate approach for calculating recovery costs, we can question whether the Path Index stores more information than necessary. Our primary concern is the recovery cost after an edge blockage. Complete path histories are useful for reconstructing the actual route, but storing every possible candidate path may be unnecessarily expensive. For a given vertex $u$, perhaps we only need to retain: \begin{itemize} \item The shortest path from $u$ to $t$. \item The best alternative path that avoids the first edge of the shortest path. \end{itemize} This raises the possibility of maintaining only two candidate paths per vertex, rather than every simple path. However, this requires further investigation. In particular, we need to establish whether the second-shortest path is sufficient for every possible blocked edge, or whether different blocked edges require different alternatives. \textbf{Future Direction:} Investigate a more compact Path Index that stores only the necessary recovery information, potentially reducing its storage requirements from an exponential number of paths to a small number of candidates per vertex. \subsection{3. Questioning the Overall Pipeline} Can the current multi-stage process be simplified or replaced? Our current approach separates the problem into several stages: \begin{enumerate} \item Enumerate simple paths using the Path Enumeration Tree. \item Organise candidate paths using the Path Index. \item Calculate recovery costs using reversed Dijkstra. \item Select an appropriate path based on the resulting information. \end{enumerate} Although each stage has a specific purpose, the overall process introduces additional computational and storage overhead. This raises a broader question: are all these stages necessary, or can we derive the required recovery information more directly from the original graph? \textbf{Future Direction:} Investigate whether a more integrated approach can calculate the necessary recovery costs and identify alternative paths without explicitly constructing all intermediate representations.
+```latex
+\subsection{Questioning the Current Approach}
 
+\subsubsection{Questioning the Path Enumeration Tree}
+
+Can we construct the Path Index without explicitly enumerating every simple path?
+The Path Enumeration Tree provides a way to represent different path histories,
+but its construction can be expensive due to the potentially exponential number
+of simple paths.
+
+We also observed repeated substructures in the tree. However, these do not
+necessarily correspond to equivalent subproblems that can be merged. Different
+path histories may contain different visited vertices and accumulated costs,
+meaning that merging them could lose information required to maintain simple
+paths. As a result, we were unable to formulate a useful dynamic programming
+approach using a sufficiently compact state representation.
+
+\textbf{Future Direction:} Investigate whether the Path Index can be constructed
+directly, without first generating the full Path Enumeration Tree.
+
+\subsubsection{Questioning the Path Index}
+
+Do we actually need to store every candidate path?
+Assuming reversed Dijkstra is an appropriate approach for calculating recovery
+costs, we can question whether the Path Index stores more information than
+necessary.
+
+Our primary concern is the recovery cost after an edge blockage. Complete path
+histories are useful for reconstructing the actual route, but storing every
+possible candidate path may be unnecessarily expensive. For a given vertex
+$u$, perhaps we only need to retain:
+
+\begin{itemize}
+    \item The shortest path from $u$ to $t$.
+    \item The best alternative path that avoids the first edge of the shortest
+          path.
+\end{itemize}
+
+This raises the possibility of maintaining only two candidate paths per vertex,
+rather than every simple path. However, this requires further investigation.
+In particular, we need to establish whether the second-shortest path is
+sufficient for every possible blocked edge, or whether different blocked edges
+require different alternatives.
+
+\textbf{Future Direction:} Investigate a more compact Path Index that stores only
+the necessary recovery information, potentially reducing its storage
+requirements from an exponential number of paths to a small number of candidates
+per vertex.
+
+\subsubsection{Questioning the Overall Pipeline}
+
+Can the current multi-stage process be simplified or replaced?
+Our current approach separates the problem into several stages:
+
+\begin{enumerate}
+    \item Enumerate simple paths using the Path Enumeration Tree.
+    \item Organise candidate paths using the Path Index.
+    \item Calculate recovery costs using reversed Dijkstra.
+    \item Select an appropriate path based on the resulting information.
+\end{enumerate}
+
+Although each stage has a specific purpose, the overall process introduces
+additional computational and storage overhead. This raises a broader question:
+are all these stages necessary, or can we derive the required recovery
+information more directly from the original graph?
+
+\textbf{Future Direction:} Investigate whether a more integrated approach can
+calculate the necessary recovery costs and identify alternative paths without
+explicitly constructing all intermediate representations.
 ```
 # 4. Route Selection Formulation and Correctness
 This is where I would put the mathematical core of the project.
@@ -195,7 +347,9 @@ dist[u]=\min_{v\in N(u)}Q(u,v)
 
 Explain the intuition behind the minimax choice and how the modified reverse-Dijkstra procedure calculates these values.
 ```latex
-The selection problem aims to determine the next hop that minimises the worst-case travel cost from the current vertex \(u\) to the destination \(t\).\\ 
+\subsection{Route Selection Formulation and Correctness}
+\subsubsection{Current Route-Selection Formulation}
+The selection problem aims to determine the next hop that minimises the worst-case travel cost from the current vertex $u$ to the destination $t$.\\ 
 For each candidate neighbour \(v\), two outcomes are considered: if the edge $(u,v)$ succeeds, the traveller pays $w(u,v)$ and continues with the optimal cost $dist[v]$; if it is blocked, the traveller incurs a recovery cost $R(u,v)$ to reach an alternative route. Therefore, the cost of selecting $v$ is defined as
 $$Q(u,v)=\max\left(w(u,v)+dist[v],R(u,v)\right)$$
 , and the optimal choice is
@@ -211,6 +365,7 @@ propagating the optimal values from the destination towards the source.
 - Why excluding a blocked first hop gives the appropriate recovery path.
 - Relationship between \(R(u,v)\) and the shortest path in \(G-\{u,v\}\).
 ```latex
+\subsubsection{Correctness of Recovery Costs}
 Grouping paths according to their first hop provides a systematic way to identify alternative routes from the current vertex $u$ to the destination $t$. Any two paths with different first hops represent distinct initial routing choices. Therefore, when the selected edge $(u,v)$ is blocked, valid recovery paths must belong to groups whose first hops differ from $v$. Excluding the blocked edge ensures that the recovery path does not rely on the unavailable connection. Consequently, the recovery cost is equivalent to the shortest-path distance in the graph with the blocked edge removed:
 
 $$
@@ -227,7 +382,7 @@ The first may be provable using the label-setting property. The second is more d
 
 ```latex
 % 4.3: Correctness of the Selection Recurrence
-\subsection*{4.3.1 Modified reverse-Dijkstra solves the stated recurrence}
+\subsubsection*{Correctness of the Selection Recurrence}
 
 Consider the recurrence
 \[
@@ -262,7 +417,7 @@ Conversely, every relaxation corresponds to a valid choice of $v$, so the algori
 
 \noindent\textbf{Conclusion.} Modified reverse-Dijkstra correctly computes the values of the stated recurrence, provided that $R(u,v)$ is finite and correct.
 
-\subsection*{4.3.2 Whether the recurrence represents the optimal strategy}
+\subsubsection*{Whether the recurrence represents the optimal strategy}
 
 The recurrence is valid only if the success and failure cases for $(u,v)$ can be combined into one state from $v$. In the success case, the traveller knows that $(u,v)$ is open. In the failure case, the traveller knows that $(u,v)$ is blocked and begins recovery. The current recurrence uses the unconditioned value $D(v)$ in the success case, so it does not carry this known-open information forward.
 
@@ -280,7 +435,7 @@ Discuss whether this causes overestimation or a suboptimal decision, and whether
 
 ```latex
 % 4.4: History-Dependent State Counterexample and State Refinement
-\subsection*{4.4.1 Counterexample}
+\subsubsection*{History-Dependent State Counterexample}
 
 The claim that $dist[v]$ remains valid after $(u,v)$ is confirmed open is not established. The following counterexample also satisfies all valid assumptions of the problem: the graph is connected and undirected, edge weights are positive, and at most one edge may be blocked.
 
@@ -315,9 +470,9 @@ The infinite value at $1$ included a possible failure of $(1,0)$, but that edge 
 
 \noindent\textbf{Conclusion.} Using only $D(v)$ can be either overconservative or incorrect, because $D(v)$ is computed without the confirmed-open edge information; the overconservative result can also exclude a feasible state.
 
-\subsection*{4.4.2 Required state refinement}
+\subsubsection*{Future Work: State Refinement}
 
-Let $S$ be the set of edges already confirmed open. Define $D(u,S)$ as the minimum worst-case additional cost from vertex $u$ under this knowledge state. A candidate edge $(u,x)$ has two forms:
+One possible direction for future work is to refine the state so that it records edges already confirmed open. Let $S$ denote this set and let $D(u,S)$ denote the proposed worst-case cost from vertex $u$ under that knowledge state. A candidate edge $(u,x)$ could then be treated in two forms:
 \[
 D(u,S)=\min_{x\in N(u)}
 \begin{cases}
@@ -329,9 +484,9 @@ with $D(t,S)=0$.
 
 If $(u,x)$ is already open, the traveller considers only the successful branch. If $(u,x)$ has not been confirmed open, the traveller still considers the maximum of the successful and blocked outcomes, and adds $(u,x)$ to the known-open set after a successful traversal.
 
-The original recurrence uses $D(v,\varnothing)$ instead of $D(v,S\cup\{(u,v)\})$, so the history-dependent state is not represented by $dist[v]$.
+This proposed formulation would replace the current recurrence's use of $D(v,\varnothing)$ with the history-aware value $D(v,S\cup\{(u,v)\})$, rather than representing the history-dependent state with $dist[v]$ in the current implementation.
 
-\noindent\textbf{Conclusion.} A richer state parameterised by known-open edges is required for a fully history-aware proof of the current traveller strategy.
+\noindent\textbf{Conclusion.} A future history-aware formulation could investigate whether tracking known-open edges is sufficient to prove and compute an optimal traveller strategy; the current project has not implemented or proved this refined state model.
 ```
 
 ```dot
